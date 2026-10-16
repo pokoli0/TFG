@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>PoC - Phaser</title>
+    <!-- Importacion de Phaser -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        /* Centramos el canvas en la pantalla */
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #ffffff; }
+    </style>
+</head>
+<body>
+    <script>
+        // CONFIGURACION DEL MOTOR.
+        const config = {
+            type: Phaser.AUTO, // Phaser creara el <canvas>
+            width: 800,
+            height: 600,
+            physics: {
+                default: 'arcade', // con matter.js
+                matter: {
+                    gravity: { y: 1 }, // Gravedad hacia abajo
+                    debug: true // para dibujar los cuerpos fisicos y vectores
+                },
+                arcade: {
+                    gravity: { y: 300 }, // Gravedad hacia abajo
+                    debug: true // para dibujar los cuerpos fisicos y vectores
+                }
+            },
+            scene: {
+                create: createArcade
+            }
+        };
+
+        // JUEGO
+        const game = new Phaser.Game(config);
+
+        // ESCENA
+        function createMatter() {
+            // 1. Crear el objeto visual (X, Y, Ancho, Alto, Color Hexadecimal)
+            const sueloVisual = this.add.rectangle(400, 580, 800, 40, 0xffffff);
+            // 2. Aplicarle la física al objeto
+            this.matter.add.gameObject(sueloVisual, { isStatic: true });
+
+            // Lo mismo para el cubo
+            const cuboVisual = this.add.rectangle(400, 100, 50, 50, 0x0000ff);
+            this.matter.add.gameObject(cuboVisual);
+        }
+
+        function createArcade() {
+            // A. Crear los objetos visuales
+            const sueloVisual = this.add.rectangle(400, 580, 800, 40, 0xcccccc); // Suelo gris
+            const cuboVisual = this.add.rectangle(400, 100, 50, 50, 0x0000ff);   // Cubo azul
+
+            // B. Aplicar físicas Arcade a los objetos visuales
+            // El 'true' en el suelo significa que es estático (isStatic)
+            this.physics.add.existing(sueloVisual, true); 
+            this.physics.add.existing(cuboVisual);
+
+            // C. AÑADIR COLISIÓN (Muy importante en Arcade)
+            this.physics.add.collider(cuboVisual, sueloVisual);
+        }
+    </script>
+</body>
+</html>
